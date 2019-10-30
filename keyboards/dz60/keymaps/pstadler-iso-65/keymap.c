@@ -41,12 +41,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case _KC_FN:
       if (record->event.pressed) {
         if (keyboard_report->mods & MOD_BIT(KC_LSFT)) {
-          layer_on(_ML);
+          layer_move(_ML);
         } else {
-          layer_on(_FL);
+          layer_move(_FL);
         }
       } else {
-        layer_on(_BL);
+        layer_clear();
       }
 
       return false;
