@@ -36,16 +36,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
-static bool shift_held = false;
+static bool lshift_held = false;
 static bool fn_held = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case KC_LSFT:
-    case KC_RSFT:
-      shift_held = record->event.pressed;
+      lshift_held = record->event.pressed;
       if (fn_held) {
-        layer_move(shift_held ? _ML : _FL);
+        layer_move(lshift_held ? _ML : _FL);
 
         return false;
       }
@@ -56,14 +55,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       fn_held = record->event.pressed;
       if (record->event.pressed) {
         unregister_code(KC_LSFT);
-        unregister_code(KC_RSFT);
-        layer_move(shift_held ? _ML : _FL);
+        layer_move(lshift_held ? _ML : _FL);
       } else {
         layer_clear();
       }
 
       return false;
+
+    case KC_BSPC:
+      if (lshift_held) {
+        if (record->event.pressed) {
+          unregister_code(KC_LSFT);
+          register_code(KC_DEL);
+        } else {
+          unregister_code(KC_DEL);
+          register_code(KC_LSFT);
+        }
+
+        return false;
+      }
+
+      return true;
   }
 
   return true;
-};
+}
