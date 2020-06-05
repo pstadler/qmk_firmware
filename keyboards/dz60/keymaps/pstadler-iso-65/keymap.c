@@ -37,11 +37,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 };
 
-static bool lctl_held = false;
-static bool lshift_held = false;
-static bool fn_held = false;
-
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  static bool lctl_held = false;
+  static bool lshift_held = false;
+  static bool fn_held = false;
+  static uint16_t fn_hold_timer = 0;
+
   switch (keycode) {
     case KC_LCTL:
       lctl_held = record->event.pressed;
@@ -60,9 +61,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case M_FN:
       fn_held = record->event.pressed;
       if (record->event.pressed) {
+        fn_hold_timer = timer_read();
+
         unregister_code(KC_LSFT);
         layer_move(lshift_held ? _ML : _FL);
       } else {
+        // toggle capslock on tap
+        if (timer_elapsed(fn_hold_timer) < 175) {
+          register_code(KC_CAPS);
+        }
+        fn_hold_timer = 0;
+
         layer_clear();
         if (lshift_held) {
           register_code(KC_LSFT);
