@@ -1,5 +1,7 @@
 #include QMK_KEYBOARD_H
 
+#define TAP_HOLD_DELAY 175
+
 enum custom_layers {
   _BL, // base layer
   _FL, // function layer
@@ -21,10 +23,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_FL] = LAYOUT_65_iso_badge(
         KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,  _______,
-        RGB_TOG, RGB_M_P, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, _______, _______, _______, _______,          _______,
+        RGB_TOG, RGB_M_P, RGB_MOD, RGB_SAI, RGB_SAD, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-        _______, _______, _______,                   _______,                            _______, _______,          _______, _______, _______
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, RGB_VAI,
+        _______, _______, _______,                   _______,                            _______, _______,          RGB_HUI, RGB_VAD, RGB_HUD
     ),
     [_ML] = LAYOUT_65_iso_badge(
         _______, KC_BRMD, KC_BRMU, _______, _______, _______, _______, KC_MRWD, KC_MPLY, KC_MFFD, KC_MUTE, KC_VOLD, KC_VOLU, _______, RESET,
@@ -65,7 +67,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_move(lshift_held ? _ML : _FL);
       } else {
         // toggle capslock on tap
-        if (timer_elapsed(fn_hold_timer) < 175) {
+        if (timer_elapsed(fn_hold_timer) < TAP_HOLD_DELAY) {
           register_code(KC_CAPS);
         }
         fn_hold_timer = 0;
@@ -105,15 +107,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #ifdef RGBLIGHT_LAYERS
 // Think6.5 v2 2U badge LED ranges - slit: 0, 1 / icon: 2, 3
 const rgblight_segment_t PROGMEM capslock_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-  {0, 2, HSV_WHITE}
+  {1, 1, HSV_WHITE}
 );
 
 const rgblight_segment_t PROGMEM function_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-  {0, 2, HSV_YELLOW}
+  {1, 1, HSV_YELLOW}
 );
 
 const rgblight_segment_t PROGMEM media_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-  {0, 2, HSV_ORANGE}
+  {1, 1, HSV_ORANGE}
 );
 
 const rgblight_segment_t* const PROGMEM custom_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
